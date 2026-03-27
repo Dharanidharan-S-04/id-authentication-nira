@@ -478,7 +478,21 @@ public class PartnerServiceManager {
 			IdAuthCommonConstants.PARTNER_DATA, IdAuthCommonConstants.MISP_LIC_DATA, IdAuthCommonConstants.OIDC_CLIENT_DATA }, allEntries = true,
 		    beforeInvocation = true)
 	public void updatePartnerData(EventModel eventModel) {
+		if (eventModel == null || eventModel.getEvent() == null || eventModel.getEvent().getData() == null) {
+			logger.warn(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"Skipping partner update due to null/invalid eventModel.");
+			return;
+		}
+		// Helps trace which WebSub callback endpoint triggered this update.
+		logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+				"START - eventType=" + eventModel.getEvent().getType()
+						+ ", dataKeys=" + eventModel.getEvent().getData().keySet());
 		PartnerData partnerEventData = mapper.convertValue(eventModel.getEvent().getData().get(PARTNER_DATA), PartnerData.class);
+		logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+				"Partner update payload - partnerId=" + partnerEventData.getPartnerId()
+						+ ", partnerStatus=" + partnerEventData.getPartnerStatus()
+						+ ", deleted=" + partnerEventData.isDeleted()
+						+ ", partnerName=" + partnerEventData.getPartnerName());
 		Optional<PartnerData> partnerDataOptional = partnerDataRepo.findById(partnerEventData.getPartnerId());
 		if (partnerDataOptional.isPresent()) {
 			PartnerData partnerData = partnerDataOptional.get();
@@ -492,6 +506,8 @@ public class PartnerServiceManager {
 		} else {
 			partnerEventData.setCreatedBy(getCreatedBy(eventModel));
 			partnerEventData.setCrDTimes(DateUtils.getUTCCurrentDateTime());
+			logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"Partner not found in DB; creating new row - partnerId=" + partnerEventData.getPartnerId());
 			partnerDataRepo.save(partnerEventData);
 		}
 	}
@@ -581,8 +597,21 @@ public class PartnerServiceManager {
 			IdAuthCommonConstants.PARTNER_DATA, IdAuthCommonConstants.MISP_LIC_DATA, IdAuthCommonConstants.OIDC_CLIENT_DATA }, allEntries = true,
 		    beforeInvocation = true)
 	public void updateMispLicenseData(EventModel eventModel) {
+		if (eventModel == null || eventModel.getEvent() == null || eventModel.getEvent().getData() == null) {
+			logger.warn(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updateMispLicenseData",
+					"Skipping MISP license update due to null/invalid eventModel.");
+			return;
+		}
+		logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updateMispLicenseData",
+				"START - eventType=" + eventModel.getEvent().getType()
+						+ ", dataKeys=" + eventModel.getEvent().getData().keySet());
 		Map<String, Object> eventDataMap = eventModel.getEvent().getData();
 		MispLicenseData mispLicenseEventData = mapper.convertValue(eventDataMap.get(MISP_LICENSE_DATA), MispLicenseData.class);
+		logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updateMispLicenseData",
+				"Payload - mispId=" + mispLicenseEventData.getMispId()
+						+ ", licenseKey=" + mispLicenseEventData.getLicenseKey()
+						+ ", mispStatus=" + mispLicenseEventData.getMispStatus()
+						+ ", deleted=" + mispLicenseEventData.isDeleted());
 		PolicyData policyEventData = null;
 		if (eventDataMap.containsKey(POLICY_DATA)) {
 			// First Add/Update the Policy details

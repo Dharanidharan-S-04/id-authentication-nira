@@ -8,8 +8,6 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.kernel.websub.api.annotation.PreAuthenticateContentAndVerifyIntent;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 
 import static io.mosip.authentication.core.constant.IdAuthConfigKeyConstants.IDA_WEBSUB_HOTLIST_CALLBACK_SECRET;
 import static io.mosip.authentication.core.constant.IdAuthConfigKeyConstants.IDA_WEBSUB_HOTLIST_TOPIC;
@@ -50,6 +49,20 @@ public class HotlistEventController {
 					+ "}")
 	public void handleHotlisting(@RequestBody EventModel eventModel) throws IdAuthenticationBusinessException {
 		logger.debug(IdAuthCommonConstants.SESSION_ID, "HotlistEventController", "handleHotlisting", "EVENT RECEIVED");
+		try {
+			Object eventType = eventModel != null && eventModel.getEvent() != null ? eventModel.getEvent().getType() : null;
+			Map<String, Object> data = eventModel != null && eventModel.getEvent() != null ? eventModel.getEvent().getData() : null;
+			Object id = data != null ? data.get("id") : null;
+			Object idType = data != null ? data.get("idType") : null;
+			Object status = data != null ? data.get("status") : null;
+			Object expiryTimestamp = data != null ? data.get("expiryTimestamp") : null;
+			logger.info(IdAuthCommonConstants.SESSION_ID, "HotlistEventController", "handleHotlisting",
+					"WebSub hotlist callback - eventType=" + String.valueOf(eventType) + ", idType=" + idType + ", status=" + status
+							+ ", id=" + id + ", expiryTimestamp=" + expiryTimestamp);
+		} catch (Exception e) {
+			logger.warn(IdAuthCommonConstants.SESSION_ID, "HotlistEventController", "handleHotlisting",
+					"Failed to log hotlist callback payload details.");
+		}
 		hotlistService.handlingHotlistingEvent(eventModel);
 	}
 

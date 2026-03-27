@@ -93,7 +93,7 @@ public class PartnerServiceCallbackController {
 			+ "}", callback = "${ida-websub-partner-service-partner-updated-callback-relative-url}", topic = "${" + IDA_WEBSUB_TOPIC_PMP_PARTNER_UPDATED + "}")
 	public void handlePartnerUpdated(@RequestBody EventModel eventModel) {
 		try {
-			logger.debug(securityManager.getUser(), "PartnerServiceCallbackController", "handlePartnerUpdated",
+			logger.info(securityManager.getUser(), "PartnerServiceCallbackController", "handlePartnerUpdated",
 					PARTNER_UPDATED_EVENT_NAME + " EVENT RECEIVED");
 			logEventDetails("handlePartnerUpdated", eventModel);
 			partnerManager.updatePartnerData(eventModel);
@@ -159,7 +159,7 @@ public class PartnerServiceCallbackController {
 			+ "}", callback = "${ida-websub-partner-service-misp-license-generated-callback-relative-url}", topic = "${" + IDA_WEBSUB_TOPIC_PMP_MISP_LICENSE_GENERATED + "}")
 	public void handleMispLicenseGeneratedEvent(@RequestBody EventModel eventModel) {
 		try {
-			logger.debug(securityManager.getUser(), "PartnerServiceCallbackController", "handleMispLicenseGeneratedEvent",
+			logger.info(securityManager.getUser(), "PartnerServiceCallbackController", "handleMispLicenseGeneratedEvent",
 					MISP_LICENSE_GENERATED + " EVENT RECEIVED");
 			logEventDetails("handleMispLicenseGeneratedEvent", eventModel);
 			partnerManager.updateMispLicenseData(eventModel);
