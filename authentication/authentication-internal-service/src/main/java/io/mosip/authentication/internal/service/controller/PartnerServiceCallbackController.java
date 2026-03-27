@@ -95,6 +95,7 @@ public class PartnerServiceCallbackController {
 		try {
 			logger.debug(securityManager.getUser(), "PartnerServiceCallbackController", "handlePartnerUpdated",
 					PARTNER_UPDATED_EVENT_NAME + " EVENT RECEIVED");
+			logEventDetails("handlePartnerUpdated", eventModel);
 			partnerManager.updatePartnerData(eventModel);
 		} catch (Exception e) {
 			logger.error(securityManager.getUser(), "PartnerServiceCallbackController", "handlePartnerUpdated",
@@ -160,6 +161,7 @@ public class PartnerServiceCallbackController {
 		try {
 			logger.debug(securityManager.getUser(), "PartnerServiceCallbackController", "handleMispLicenseGeneratedEvent",
 					MISP_LICENSE_GENERATED + " EVENT RECEIVED");
+			logEventDetails("handleMispLicenseGeneratedEvent", eventModel);
 			partnerManager.updateMispLicenseData(eventModel);
 		} catch (Exception e) {
 			logger.error(securityManager.getUser(), "PartnerServiceCallbackController", "handleMispLicenseGeneratedEvent",
@@ -251,6 +253,24 @@ public class PartnerServiceCallbackController {
 		} catch (Exception e) {
 			logger.error(securityManager.getUser(), "PartnerServiceCallbackController", "handlePartnerAmountUpdated",
 					ExceptionUtils.getFullStackTrace(e));
+		}
+	}
+
+	private void logEventDetails(String methodName, EventModel eventModel) {
+		try {
+			Object eventType = null;
+			Object dataKeys = null;
+			Object partnerData = null;
+			if (eventModel != null && eventModel.getEvent() != null && eventModel.getEvent().getData() != null) {
+				eventType = eventModel.getEvent().getType();
+				dataKeys = eventModel.getEvent().getData().keySet();
+				partnerData = eventModel.getEvent().getData().get("partnerData");
+			}
+			logger.info(securityManager.getUser(), "PartnerServiceCallbackController", methodName,
+					"WebSub callback payload: eventType=" + eventType + ", dataKeys=" + dataKeys + ", partnerData=" + partnerData);
+		} catch (Exception e) {
+			logger.warn(securityManager.getUser(), "PartnerServiceCallbackController", methodName,
+					"Failed to log callback payload details.");
 		}
 	}
 }
