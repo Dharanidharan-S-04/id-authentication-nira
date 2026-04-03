@@ -217,7 +217,7 @@ public class PartnerServiceManager {
 
 		if (partnerMappingDataOptional.isPresent() && !partnerMappingDataOptional.get().isDeleted()) {
 			PartnerMapping partnerMapping = partnerMappingDataOptional.get();
-			Optional<PartnerData> partnerDataOptional = partnerDataRepo.findByPartnerIdFromDB(partnerMapping.getPartnerData().getPartnerId());
+			Optional<PartnerData> partnerDataOptional = partnerDataRepo.findByPartnerId(partnerMapping.getPartnerData().getPartnerId());
 
 			logger.info(IdAuthCommonConstants.IDA, this.getClass().getSimpleName(),
 					"partner_mapping_details",
