@@ -531,6 +531,28 @@ public class PartnerServiceManager {
 					"Partner not found in DB; creating new row - partnerId=" + partnerEventData.getPartnerId());
 			partnerDataRepo.save(partnerEventData);
 		}
+
+		// Changed here: using findByPartnerId instead of findById
+		Optional<PartnerData> partnerDataOptional1 = partnerDataRepo.findByPartnerId(partnerEventData.getPartnerId());
+
+		// Log based on Optional presence
+		if (partnerDataOptional1.isPresent()) {
+			PartnerData partnerData1 = partnerDataOptional1.get();
+			// Field-level logging
+			logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"DB PartnerData - partnerId=" + partnerData1.getPartnerId()
+							+ ", partnerStatus=" + partnerData1.getPartnerStatus()
+							+ ", deleted=" + partnerData1.isDeleted()
+							+ ", partnerName=" + partnerData1.getPartnerName());
+
+			// Full object logging (for deep debugging)
+			logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"Full PartnerData Object: " + partnerData1);
+
+		} else {
+			logger.warn(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"No PartnerData found in DB/cache for partnerId=" + partnerEventData.getPartnerId());
+		}
 	}
 
 	/**
