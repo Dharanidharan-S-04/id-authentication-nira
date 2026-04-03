@@ -493,7 +493,28 @@ public class PartnerServiceManager {
 						+ ", partnerStatus=" + partnerEventData.getPartnerStatus()
 						+ ", deleted=" + partnerEventData.isDeleted()
 						+ ", partnerName=" + partnerEventData.getPartnerName());
-		Optional<PartnerData> partnerDataOptional = partnerDataRepo.findById(partnerEventData.getPartnerId());
+		// Changed here: using findByPartnerId instead of findById
+		Optional<PartnerData> partnerDataOptional = partnerDataRepo.findByPartnerId(partnerEventData.getPartnerId());
+
+		// Log based on Optional presence
+		if (partnerDataOptional.isPresent()) {
+			PartnerData partnerData = partnerDataOptional.get();
+			// Field-level logging
+			logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"DB PartnerData - partnerId=" + partnerData.getPartnerId()
+							+ ", partnerStatus=" + partnerData.getPartnerStatus()
+							+ ", deleted=" + partnerData.isDeleted()
+							+ ", partnerName=" + partnerData.getPartnerName());
+
+			// Full object logging (for deep debugging)
+			logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"Full PartnerData Object: " + partnerData);
+
+		} else {
+			logger.warn(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"No PartnerData found in DB/cache for partnerId=" + partnerEventData.getPartnerId());
+		}
+
 		if (partnerDataOptional.isPresent()) {
 			PartnerData partnerData = partnerDataOptional.get();
 			partnerData.setPartnerName(partnerEventData.getPartnerName());
