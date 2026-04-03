@@ -524,6 +524,19 @@ public class PartnerServiceManager {
 			partnerData.setUpdatedBy(getCreatedBy(eventModel));
 			partnerData.setUpdDTimes(DateUtils.getUTCCurrentDateTime());
 			partnerDataRepo.save(partnerData);
+
+			PartnerData partnerData1 = partnerDataOptional.get();
+			// Field-level logging
+			logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"DB PARTNERDATA - PARTNERID1=" + partnerData1.getPartnerId()
+							+ ", partnerStatus=" + partnerData1.getPartnerStatus()
+							+ ", deleted=" + partnerData1.isDeleted()
+							+ ", partnerName=" + partnerData1.getPartnerName());
+
+			// Full object logging (for deep debugging)
+			logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
+					"Full PartnerData Object: " + partnerData1);
+
 		} else {
 			partnerEventData.setCreatedBy(getCreatedBy(eventModel));
 			partnerEventData.setCrDTimes(DateUtils.getUTCCurrentDateTime());
