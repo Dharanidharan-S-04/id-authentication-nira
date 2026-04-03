@@ -540,7 +540,7 @@ public class PartnerServiceManager {
 			PartnerData partnerData1 = partnerDataOptional1.get();
 			// Field-level logging
 			logger.info(IdAuthCommonConstants.SESSION_ID, this.getClass().getSimpleName(), "updatePartnerData",
-					"DB PartnerData - partnerId=" + partnerData1.getPartnerId()
+					"DB PARTNERDATA - PARTNERID1=" + partnerData1.getPartnerId()
 							+ ", partnerStatus=" + partnerData1.getPartnerStatus()
 							+ ", deleted=" + partnerData1.isDeleted()
 							+ ", partnerName=" + partnerData1.getPartnerName());
