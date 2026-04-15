@@ -429,7 +429,9 @@ private String idname;
 	public static Optional<String> getIdNameForMapping(String mappingName, MappingConfig mappingConfig) {
 		//First check if this already the ID Name in static and dynamic mapping
 		Supplier<? extends Optional<? extends String>> dynamicMappingFinder = () -> mappingConfig.getDynamicAttributes().containsKey(mappingName) ? Optional.of(mappingName) : Optional.empty();
-		Optional<String> staticMapping = Stream.of(IdaIdMapping.values()).map(idmap -> idmap.idname)
+		Optional<String> staticMapping =  "givenName".equals(mappingName)
+        ? Optional.empty()
+        : Stream.of(IdaIdMapping.values()).map(idmap -> idmap.idname)
 				.filter(idname -> idname.equals(mappingName))
 				.findAny();
 		Optional<String> existingMapping = staticMapping.or(dynamicMappingFinder);
